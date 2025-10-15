@@ -1,17 +1,30 @@
-document.getElementById("solarForm").addEventListener("submit", function(e) {
+document.getElementById("solarForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
   
-  const irradiance = parseFloat(document.getElementById("irradiance").value);
-  const temp = parseFloat(document.getElementById("temp").value);
-  const prevHour = parseFloat(document.getElementById("prevHour").value);
-  const prevDay = parseFloat(document.getElementById("prevDay").value);
-  const roll3 = parseFloat(document.getElementById("roll3").value);
-  const roll6 = parseFloat(document.getElementById("roll6").value);
+  const data = {
+    irradiance: parseFloat(document.getElementById("irradiance").value),
+    temp: parseFloat(document.getElementById("temp").value),
+    prevHour: parseFloat(document.getElementById("prevHour").value),
+    prevDay: parseFloat(document.getElementById("prevDay").value),
+    roll3: parseFloat(document.getElementById("roll3").value),
+    roll6: parseFloat(document.getElementById("roll6").value),
+  };
 
+  try {
+   
+    const res = await fetch("http://localhost:5000/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
 
-  const predictedPower = (irradiance * 0.004) + (50 - temp) * 0.3 + (prevHour + prevDay + roll3 + roll6) / 4 * 0.1;
+    const result = await res.json();
 
-  document.getElementById("output").innerText = 
-    `Estimated AC Power Output: ${predictedPower.toFixed(2)} kW`;
+    document.getElementById("output").innerText =
+      `Estimated AC Power Output: ${result.predictedPower.toFixed(2)} kW`;
+  } catch (error) {
+    console.error("Error:", error);
+    document.getElementById("output").innerText = "Error connecting to backend!";
+  }
 });
