@@ -38,14 +38,26 @@ def predict():
     except Exception:
         return jsonify({"error": "Prediction failed"}), 500
 
-# Serve React static files
+
+
+
+
+
+from flask import send_from_directory
+import os
+
+# Serve React build files
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
+    build_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../frontend-react/build")
+    if path != "" and os.path.exists(os.path.join(build_dir, path)):
+        return send_from_directory(build_dir, path)
     else:
-        return send_from_directory(app.static_folder, "index.html")
+        return send_from_directory(build_dir, "index.html")
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
