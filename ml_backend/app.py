@@ -1,22 +1,33 @@
+
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import numpy as np
 import pickle
 import os
 
-app = Flask(__name__, static_folder="frontend-react/build")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
+REACT_BUILD_DIR = os.path.join(BASE_DIR, "../frontend-react/build")
+
+
+app = Flask(__name__, static_folder=REACT_BUILD_DIR)
 CORS(app)
 
-# Load model on startup
+
 try:
-    if not os.path.exists("ml_backend/model.pkl"):
+    if not os.path.exists(MODEL_PATH):
         raise FileNotFoundError("model.pkl not found. Please run train.py first.")
-    with open("ml_backend/model.pkl", "rb") as f:
+    
+    with open(MODEL_PATH, "rb") as f:
         model = pickle.load(f)
+    
     print("✅ Model loaded successfully")
 except Exception as e:
     print(f"❌ Error loading model: {e}")
     model = None
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -35,29 +46,20 @@ def predict():
         ]])
         prediction = model.predict(features)[0]
         return jsonify({"predictedPower": float(prediction)})
-    except Exception:
+    except Exception as e:
+        print("Prediction error:", e)
         return jsonify({"error": "Prediction failed"}), 500
 
 
-
-
-
-
-from flask import send_from_directory
-import os
-
-# Serve React build files
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve(path):
-    build_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../frontend-react/build")
-    if path != "" and os.path.exists(os.path.join(build_dir, path)):
-        return send_from_directory(build_dir, path)
+    if path != "" and os.path.exists(os.path.join(REACT_BUILD_DIR, path)):
+        return send_from_directory(REACT_BUILD_DIR, path)
     else:
-        return send_from_directory(build_dir, "index.html")
-
-
+        return send_from_directory(REACT_BUILD_DIR, "index.html")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

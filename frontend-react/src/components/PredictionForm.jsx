@@ -83,7 +83,7 @@ const PredictionForm = ({ setPrediction }) => {
 
     setIsLoading(true);
     try {
-      const res = await fetch("https://YOUR-NODE-BACKEND.onrender.com/predict", {
+      const res = await fetch("/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
