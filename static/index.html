@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoCharge Solar Power Predictor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ EcoCharge Solar Power Predictor</h1>
+    <p>Enter solar plant parameters below to estimate AC Power output.</p>
+
+    <form id="solarForm">
+      <div class="form-group">
+        <label for="irradiance">Irradiance (W/m²):</label>
+        <input type="number" id="irradiance" name="irradiance" required>
+      </div>
+
+      <div class="form-group">
+        <label for="temp">Temperature (°C):</label>
+        <input type="number" id="temp" name="temp" required>
+      </div>
+
+      <div class="form-group">
+        <label for="prevHour">AC Power (Prev Hour, kW):</label>
+        <input type="number" id="prevHour" name="prevHour" required>
+      </div>
+
+      <div class="form-group">
+        <label for="prevDay">AC Power (Prev Day, kW):</label>
+        <input type="number" id="prevDay" name="prevDay" required>
+      </div>
+
+      <div class="form-group">
+        <label for="roll3">Rolling Avg (3 Hr):</label>
+        <input type="number" id="roll3" name="roll3" required>
+      </div>
+
+      <div class="form-group">
+        <label for="roll6">Rolling Avg (6 Hr):</label>
+        <input type="number" id="roll6" name="roll6" required>
+      </div>
+
+      <button type="submit">Predict Power</button>
+    </form>
+
+    <div id="output"></div>
+  </div>
+
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
