@@ -20,6 +20,7 @@
   "homepage": "https://github.com/aarushi2810/solar_prediction#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "react-scripts": "^5.0.1"
   }
 }
