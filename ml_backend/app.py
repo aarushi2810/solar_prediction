@@ -1,17 +1,17 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import numpy as np
 import pickle
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend-react/build")
 CORS(app)
 
 # Load model on startup
 try:
-    if not os.path.exists("model.pkl"):
+    if not os.path.exists("ml_backend/model.pkl"):
         raise FileNotFoundError("model.pkl not found. Please run train.py first.")
-    with open("model.pkl", "rb") as f:
+    with open("ml_backend/model.pkl", "rb") as f:
         model = pickle.load(f)
     print("✅ Model loaded successfully")
 except Exception as e:
@@ -38,5 +38,14 @@ def predict():
     except Exception:
         return jsonify({"error": "Prediction failed"}), 500
 
-    if __name__ == "__main__":
-     app.run(host="0.0.0.0", port=5001)
+# Serve React static files
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, "index.html")
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
